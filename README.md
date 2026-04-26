@@ -7,14 +7,14 @@ A full-stack MERN platform where citizens report waste issues, Nagar Palika staf
 ## 📦 Tech Stack
 
 | Layer     | Technology                                       |
-| --------- | ------------------------------------------------ | ------------ |
+| --------- | ------------------------------------------------ | 
 | Frontend  | React 18 + Vite, Redux Toolkit, React Router v6  |
 | Backend   | Node.js + Express.js                             |
 | Database  | MongoDB + Mongoose (GeoJSON geospatial)          |
 | Auth      | JWT (access + refresh tokens), bcryptjs          |
 | Maps      | Leaflet.js + OpenStreetMap (free, no key needed) |
 | Images    | Cloudinary (free tier)                           |
-| Real-time | Socket.io                                        | 1keysocket// |
+| Real-time | Socket.io                                        | 
 | Email     | Nodemailer (Gmail SMTP)                          |
 | Charts    | Recharts                                         |
 | Export    | xlsx (Excel + CSV)                               |
