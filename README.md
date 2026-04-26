@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # CleanCity 🌱 — Smart Waste Management System
 
 A full-stack MERN platform where citizens report waste issues, Nagar Palika staff manages and assigns them, and Admins oversee the entire system.
@@ -245,3 +246,7 @@ Automated HTML emails sent for:
 | Email not sending        | Use Gmail App Password (not your account password) |
 | CORS error               | Set `CLIENT_URL` in backend `.env` correctly       |
 | Port conflict            | Change `PORT` in backend `.env`                    |
+=======
+# cleancity-
+ A MERN stack platform enabling citizens to report waste issues with geo-tagged photos, while municipal authorities can assign and track cleanup tasks in real-time.
+>>>>>>> 066c354ed13a00070bc9649fc645a8d75ca5bc1f
