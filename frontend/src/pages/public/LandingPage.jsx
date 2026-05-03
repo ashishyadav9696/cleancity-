@@ -34,7 +34,7 @@ export default function LandingPage() {
             🌱 Smart Waste Management for Modern Cities
           </div>
           <h1 style={{ marginBottom: 20 }}>
-            <span className="gradient-text">CleanCity</span> — Report Waste,<br />Reclaim Your Streets
+            <span className="gradient-text">Smart Waste Management System</span> — Report Waste,<br /> Reclaim Your Streets
           </h1>
           <p style={{ fontSize: 18, color: 'var(--text-secondary)', maxWidth: 560, margin: '0 auto 40px', lineHeight: 1.7 }}>
             A civic platform where citizens, municipal staff, and workers collaborate to keep cities clean. One photo. One complaint. Real action.
@@ -115,7 +115,7 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer style={{ padding: '32px 24px', borderTop: '1px solid rgba(255,255,255,0.06)', textAlign: 'center' }}>
-        <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>© 2024 CleanCity · Built for civic good 🌱</p>
+        <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>© 2024 Smart Waste Management System · Built for civic good 🌱</p>
       </footer>
     </div>
   );

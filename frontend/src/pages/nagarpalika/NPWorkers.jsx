@@ -1,21 +1,46 @@
 import { useEffect, useState } from 'react';
 import Sidebar from '../../components/common/Sidebar';
-import { analyticsAPI } from '../../api/axios';
+import { analyticsAPI, usersAPI } from '../../api/axios';
 import { Spinner } from '../../components/common/UI';
+import toast from 'react-hot-toast';
 
 export default function NPWorkers() {
   const [workers, setWorkers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showAdd, setShowAdd] = useState(false);
+  const [newWorker, setNewWorker] = useState({ name: '', email: '', password: '', phone: '' });
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     analyticsAPI.getWorkerPerformance().then(({ data }) => { setWorkers(data.data); setLoading(false); });
   }, []);
 
+  const handleAddWorker = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await usersAPI.create({ ...newWorker, role: 'worker', city: 'Mumbai' });
+      toast.success('Worker added successfully');
+      setShowAdd(false);
+      setNewWorker({ name: '', email: '', password: '', phone: '' });
+      // Reload performance data just in case, though new worker won't have performance yet
+      const { data } = await analyticsAPI.getWorkerPerformance();
+      setWorkers(data.data);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to add worker');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="dashboard-layout">
       <Sidebar />
       <div className="main-content">
-        <div className="topbar"><div className="topbar-title">Worker Performance</div></div>
+        <div className="topbar">
+          <div className="topbar-title">Worker Performance</div>
+          <button className="btn btn-primary" style={{ padding: '6px 12px', fontSize: 13 }} onClick={() => setShowAdd(true)}>+ Add Worker</button>
+        </div>
         <div style={{ padding: 24 }}>
           {loading ? <div className="flex-center" style={{ height: 200 }}><Spinner size={28} /></div> : (
             <div className="table-container">
@@ -59,6 +84,27 @@ export default function NPWorkers() {
           )}
         </div>
       </div>
+
+      {showAdd && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="card" style={{ width: 400, background: '#1e293b' }}>
+            <h3 style={{ marginBottom: 16 }}>Add New Worker</h3>
+            <form onSubmit={handleAddWorker} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <input required className="form-input" placeholder="Full Name" value={newWorker.name} onChange={e => setNewWorker(w => ({ ...w, name: e.target.value }))} />
+              <input required className="form-input" type="email" placeholder="Email Address" value={newWorker.email} onChange={e => setNewWorker(w => ({ ...w, email: e.target.value }))} />
+              <input required className="form-input" type="password" placeholder="Password" value={newWorker.password} onChange={e => setNewWorker(w => ({ ...w, password: e.target.value }))} />
+              <input className="form-input" placeholder="Phone Number (Optional)" value={newWorker.phone} onChange={e => setNewWorker(w => ({ ...w, phone: e.target.value }))} />
+              
+              <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
+                <button type="button" className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setShowAdd(false)}>Cancel</button>
+                <button type="submit" className="btn btn-primary" style={{ flex: 1, justifyContent: 'center' }} disabled={saving}>
+                  {saving ? <Spinner size={14} color="#0f172a" /> : 'Create Worker'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

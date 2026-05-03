@@ -44,24 +44,14 @@ export default function NPDashboard() {
             <div className="card">
               <h4 style={{ marginBottom: 16 }}>Report Trend (14 days)</h4>
               <ResponsiveContainer width="100%" height={200}>
-                <AreaChart data={trend}>
-                  <defs>
-                    <linearGradient id="grad1" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#22d3ee" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#22d3ee" stopOpacity={0} />
-                    </linearGradient>
-                    <linearGradient id="grad2" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
+                <BarChart data={trend}>
                   <XAxis dataKey="_id" tick={{ fill: '#64748b', fontSize: 11 }} tickLine={false} axisLine={false} />
                   <YAxis tick={{ fill: '#64748b', fontSize: 11 }} tickLine={false} axisLine={false} />
                   <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, fontSize: 12 }} />
-                  <Area type="monotone" dataKey="count" stroke="#22d3ee" fill="url(#grad1)" name="Submitted" strokeWidth={2} />
-                  <Area type="monotone" dataKey="completed" stroke="#22c55e" fill="url(#grad2)" name="Completed" strokeWidth={2} />
+                  <Bar dataKey="count" fill="#22d3ee" name="Submitted" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="completed" fill="#22c55e" name="Completed" radius={[4, 4, 0, 0]} />
                   <Legend wrapperStyle={{ fontSize: 12, color: '#94a3b8' }} />
-                </AreaChart>
+                </BarChart>
               </ResponsiveContainer>
             </div>
 

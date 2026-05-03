@@ -24,8 +24,10 @@ router.post('/:id/upvote', authenticate, authorize('citizen'), upvoteReport);
 router.get('/', authenticate, authorize('nagarpalika', 'admin', 'worker'), getReports);
 router.get('/:id', authenticate, getReportById);
 router.patch('/:id/assign', authenticate, authorize('nagarpalika', 'admin'), assignReport);
-router.patch('/:id/status', authenticate, authorize('nagarpalika', 'admin', 'worker'), upload.single('afterPhoto'), updateStatus);
+router.patch('/:id/status', authenticate, authorize('nagarpalika', 'admin', 'worker'),
+  upload.fields([{ name: 'beforePhoto', maxCount: 1 }, { name: 'afterPhoto', maxCount: 1 }]),
+  updateStatus);
 router.patch('/:id/priority', authenticate, authorize('nagarpalika', 'admin'), setPriority);
-router.post('/:id/notes', authenticate, authorize('nagarpalika', 'admin'), addNote);
+router.post('/:id/notes', authenticate, authorize('nagarpalika', 'admin', 'worker'), addNote);
 
 module.exports = router;

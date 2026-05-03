@@ -13,9 +13,13 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data } = await authAPI.getMe();
       setUser(data.data);
-    } catch {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
+    } catch (err) {
+      // Only clear tokens on explicit auth failures (401/403), not network errors
+      const status = err?.response?.status;
+      if (status === 401 || status === 403) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+      }
     } finally {
       setLoading(false);
     }
@@ -41,7 +45,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     const refreshToken = localStorage.getItem('refreshToken');
-    await authAPI.logout(refreshToken).catch(() => {});
+    await authAPI.logout(refreshToken).catch(() => { });
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     setUser(null);

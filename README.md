@@ -245,7 +245,10 @@ Automated HTML emails sent for:
 | Email not sending        | Use Gmail App Password (not your account password) |
 | CORS error               | Set `CLIENT_URL` in backend `.env` correctly       |
 | Port conflict            | Change `PORT` in backend `.env`                    |
+<<<<<<< HEAD
 =======
 # cleancity-
  A MERN stack platform enabling citizens to report waste issues with geo-tagged photos, while municipal authorities can assign and track cleanup tasks in real-time.
 
+=======
+>>>>>>> f73c3ac (Fix all login issues and others also)

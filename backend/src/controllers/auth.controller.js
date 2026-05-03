@@ -6,7 +6,10 @@ const { sendWelcomeEmail } = require('../services/mail.service');
 
 // @POST /api/auth/register  — Citizen self-registration
 const register = asyncHandler(async (req, res) => {
-  const { name, email, phone, password, city } = req.body;
+  const { name, phone, city } = req.body;
+  const email = req.body.email?.trim().toLowerCase();
+  const password = req.body.password?.trim();
+
   if (!name || !email || !password) {
     return apiResponse(res, 400, false, 'Name, email, and password are required');
   }
@@ -16,7 +19,7 @@ const register = asyncHandler(async (req, res) => {
   const user = await User.create({ name, email, phone, passwordHash: password, city, role: 'citizen' });
 
   // Send welcome email (non-blocking)
-  sendWelcomeEmail(user).catch(() => {});
+  sendWelcomeEmail(user).catch(() => { });
   logActivity({ userId: user._id, userEmail: user.email, action: 'USER_REGISTER', resource: 'user', resourceId: user._id });
 
   const accessToken = user.generateAccessToken();
@@ -29,7 +32,9 @@ const register = asyncHandler(async (req, res) => {
 
 // @POST /api/auth/login
 const login = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const email = req.body.email?.trim().toLowerCase();
+  const password = req.body.password?.trim();
+
   if (!email || !password) return apiResponse(res, 400, false, 'Email and password required');
 
   const user = await User.findOne({ email });

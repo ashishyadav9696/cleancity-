@@ -46,7 +46,7 @@ const ReportSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ['pending', 'assigned', 'in_progress', 'completed', 'rejected'],
+      enum: ['pending', 'assigned', 'in_progress', 'in_review', 'completed', 'rejected'],
       default: 'pending',
     },
     priority: {

@@ -3,7 +3,7 @@ const rateLimit = require('express-rate-limit');
 // Rate limiter for auth routes (login/register)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10,
+  max: process.env.NODE_ENV === 'development' ? 100 : 10,
   message: { success: false, message: 'Too many attempts. Please try again after 15 minutes.' },
   standardHeaders: true,
   legacyHeaders: false,

@@ -36,7 +36,7 @@ export default function Sidebar() {
         <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg, #22d3ee, #6366f1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
           <Leaf size={18} color="#fff" />
         </div>
-        <span>CleanCity</span>
+        <span style={{ fontSize: 13, lineHeight: 1.2 }}>Smart Waste<br />Management</span>
       </div>
 
       <nav className="sidebar-nav">

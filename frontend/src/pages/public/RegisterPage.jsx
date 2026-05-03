@@ -28,7 +28,7 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       await authRegister(data);
-      toast.success('Account created! Welcome to CleanCity 🌱');
+      toast.success('Account created! Welcome to Smart Waste Management System 🌱');
       navigate('/my-complaints');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Registration failed');
@@ -56,7 +56,7 @@ export default function RegisterPage() {
               <Leaf size={24} color="#fff" />
             </div>
             <h2>Create Account</h2>
-            <p style={{ marginTop: 8 }}>Join the CleanCity community</p>
+            <p style={{ marginTop: 8 }}>Join the Smart Waste Management community</p>
           </div>
           <div className="card">
             <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>

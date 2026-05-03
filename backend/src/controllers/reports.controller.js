@@ -190,7 +190,7 @@ const assignReport = asyncHandler(async (req, res) => {
 // @PATCH /api/reports/:id/status
 const updateStatus = asyncHandler(async (req, res) => {
   const { status, note } = req.body;
-  const VALID_STATUSES = ['pending', 'assigned', 'in_progress', 'completed', 'rejected'];
+  const VALID_STATUSES = ['pending', 'assigned', 'in_progress', 'in_review', 'completed', 'rejected'];
   if (!VALID_STATUSES.includes(status)) return apiResponse(res, 400, false, 'Invalid status');
 
   const report = await Report.findById(req.params.id).populate('reportedBy', 'name email').populate('category', 'name');
@@ -201,11 +201,30 @@ const updateStatus = asyncHandler(async (req, res) => {
     return apiResponse(res, 403, false, 'You can only update your assigned reports');
   }
 
-  // Handle after-photo upload for completion
-  if (status === 'completed' && req.file) {
-    const { url, publicId } = await uploadToCloudinary(req.file.buffer, 'cleancity/after');
+  // Prevent worker from marking as completed
+  if (req.user.role === 'worker' && status === 'completed') {
+    return apiResponse(res, 403, false, 'Workers cannot mark as completed directly. Please mark as in_review and upload a photo.');
+  }
+
+  // Handle before-photo upload when transitioning to in_progress
+  const beforeFile = req.files?.beforePhoto?.[0];
+  if ((status === 'in_progress') && beforeFile) {
+    const { url, publicId } = await uploadToCloudinary(beforeFile.buffer, 'cleancity/before');
+    report.beforePhoto = url;
+    report.beforePhotoPublicId = publicId;
+  }
+
+  // Handle after-photo upload for completion or review
+  const afterFile = req.files?.afterPhoto?.[0];
+  if ((status === 'completed' || status === 'in_review') && afterFile) {
+    const { url, publicId } = await uploadToCloudinary(afterFile.buffer, 'cleancity/after');
     report.afterPhoto = url;
     report.afterPhotoPublicId = publicId;
+    if (status === 'completed') report.completedAt = new Date();
+  }
+
+  // When staff marks as completed, set completedAt
+  if (status === 'completed' && req.user.role !== 'worker') {
     report.completedAt = new Date();
   }
 
@@ -213,6 +232,11 @@ const updateStatus = asyncHandler(async (req, res) => {
   report.status = status;
   report.statusHistory.push({ status, changedBy: req.user._id, note: note || `Status updated to ${status}` });
   await report.save();
+
+  // Populate the report fully before returning
+  await report.populate('assignedTo', 'name email');
+  await report.populate('assignedBy', 'name');
+  await report.populate('internalNotes.addedBy', 'name');
 
   // Notify reporter
   if (report.reportedBy) {
@@ -225,6 +249,7 @@ const updateStatus = asyncHandler(async (req, res) => {
   logActivity({ userId: req.user._id, userEmail: req.user.email, action: 'REPORT_STATUS_UPDATE', resource: 'report', resourceId: report._id, details: { from: prevStatus, to: status } });
   return apiResponse(res, 200, true, 'Status updated', report);
 });
+
 
 // @PATCH /api/reports/:id/priority
 const setPriority = asyncHandler(async (req, res) => {

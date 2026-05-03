@@ -17,10 +17,13 @@ api.interceptors.response.use(
   (res) => res,
   async (error) => {
     const original = error.config;
-    if (error.response?.status === 401 && !original._retry) {
+    // Skip refresh for auth endpoints themselves to avoid loops
+    const isAuthEndpoint = original?.url?.includes('/auth/');
+    if (error.response?.status === 401 && !original._retry && !isAuthEndpoint) {
       original._retry = true;
       try {
         const refreshToken = localStorage.getItem('refreshToken');
+        if (!refreshToken) throw new Error('No refresh token');
         const { data } = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/refresh`, { refreshToken });
         localStorage.setItem('accessToken', data.data.accessToken);
         localStorage.setItem('refreshToken', data.data.refreshToken);
@@ -55,6 +58,23 @@ export const reportsAPI = {
   getById: (id) => api.get(`/reports/${id}`),
   assign: (id, data) => api.patch(`/reports/${id}/assign`, data),
   updateStatus: (id, formData) => api.patch(`/reports/${id}/status`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  uploadBeforePhoto: (id, file) => {
+    const fd = new FormData();
+    fd.append('status', 'in_progress');
+    fd.append('beforePhoto', file);
+    return api.patch(`/reports/${id}/status`, fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+  },
+  submitForReview: (id, file) => {
+    const fd = new FormData();
+    fd.append('status', 'in_review');
+    if (file) fd.append('afterPhoto', file);
+    return api.patch(`/reports/${id}/status`, fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+  },
+  markCompleted: (id) => {
+    const fd = new FormData();
+    fd.append('status', 'completed');
+    return api.patch(`/reports/${id}/status`, fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+  },
   setPriority: (id, priority) => api.patch(`/reports/${id}/priority`, { priority }),
   addNote: (id, text) => api.post(`/reports/${id}/notes`, { text }),
   upvote: (id) => api.post(`/reports/${id}/upvote`),

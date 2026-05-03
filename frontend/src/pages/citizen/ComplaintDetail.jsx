@@ -89,11 +89,34 @@ export default function ComplaintDetail() {
             {report.description && <div style={{ marginTop: 10, padding: '10px 14px', background: 'var(--color-bg-tertiary)', borderRadius: 10 }}><div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>DESCRIPTION</div><p style={{ fontSize: 14, color: 'var(--text-primary)', margin: 0 }}>{report.description}</p></div>}
           </div>
 
-          {/* After photo */}
+          {/* After / resolution photo */}
           {report.afterPhoto && (
             <div className="card" style={{ marginBottom: 16 }}>
               <h4 style={{ marginBottom: 12 }}>✅ Resolution Photo</h4>
               <img src={report.afterPhoto} alt="After" style={{ width: '100%', borderRadius: 12, maxHeight: 250, objectFit: 'cover' }} />
+            </div>
+          )}
+
+          {/* Before photo (if available) */}
+          {report.beforePhoto && (
+            <div className="card" style={{ marginBottom: 16 }}>
+              <h4 style={{ marginBottom: 12 }}>📸 Site Photo (Before Cleaning)</h4>
+              <img src={report.beforePhoto} alt="Before" style={{ width: '100%', borderRadius: 12, maxHeight: 200, objectFit: 'cover' }} />
+            </div>
+          )}
+
+          {/* Staff Notes for citizen */}
+          {report.internalNotes?.length > 0 && (
+            <div className="card" style={{ marginBottom: 16, border: '1px solid rgba(34,211,238,0.2)', background: 'rgba(34,211,238,0.04)' }}>
+              <h4 style={{ marginBottom: 12 }}>💬 Messages from Municipal Staff</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {report.internalNotes.map((n, i) => (
+                  <div key={i} style={{ padding: '10px 14px', background: 'var(--color-bg-tertiary)', borderRadius: 10, borderLeft: '3px solid #22d3ee' }}>
+                    <div style={{ fontSize: 13, color: 'var(--text-primary)', marginBottom: 4 }}>{n.text}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>— Municipal Staff · {new Date(n.timestamp).toLocaleString('en-IN')}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
