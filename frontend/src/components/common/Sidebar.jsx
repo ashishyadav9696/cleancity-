@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Leaf, LayoutDashboard, MapPin, FileText, Users, Settings, BarChart3, Bell, LogOut, ClipboardList, Package } from 'lucide-react';
+import { Leaf, LayoutDashboard, MapPin, FileText, Users, BarChart3, Bell, LogOut, ClipboardList, Package } from 'lucide-react';
 
 const NAV_ITEMS = {
   nagarpalika: [
@@ -25,14 +25,28 @@ const NAV_ITEMS = {
   ],
 };
 
+const HOME_ROUTE = {
+  admin: '/admin/dashboard',
+  nagarpalika: '/np/dashboard',
+  worker: '/np/reports',
+  citizen: '/my-complaints',
+};
+
 export default function Sidebar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const navItems = NAV_ITEMS[user?.role] || [];
+  const homeRoute = HOME_ROUTE[user?.role] || '/';
 
   return (
     <aside className="sidebar">
-      <div className="sidebar-logo" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      {/* Logo — clicking navigates to the role's own dashboard */}
+      <div
+        className="sidebar-logo"
+        style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
+        onClick={() => navigate(homeRoute)}
+        title="Go to Dashboard"
+      >
         <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg, #22d3ee, #6366f1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
           <Leaf size={18} color="#fff" />
         </div>
@@ -41,7 +55,10 @@ export default function Sidebar() {
 
       <nav className="sidebar-nav">
         <p className="nav-section-title">
-          {user?.role === 'admin' ? 'Admin Panel' : user?.role === 'nagarpalika' ? 'NP Staff' : user?.role === 'worker' ? 'Worker' : 'Citizen'}
+          {user?.role === 'admin' ? 'Admin Panel'
+            : user?.role === 'nagarpalika' ? 'NP Staff'
+            : user?.role === 'worker' ? 'Worker'
+            : 'Citizen'}
         </p>
         {navItems.map(({ to, icon: Icon, label }) => (
           <NavLink key={to} to={to} className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
@@ -65,7 +82,12 @@ export default function Sidebar() {
             <div style={{ fontSize: 11, color: '#64748b', textTransform: 'capitalize' }}>{user?.role}</div>
           </div>
         </div>
-        <button onClick={async () => { await logout(); navigate('/'); }} className="btn btn-ghost btn-sm w-full" style={{ width: '100%', justifyContent: 'center', gap: 6 }}>
+        {/* Logout → /login, not the public landing page */}
+        <button
+          onClick={async () => { await logout(); navigate('/login'); }}
+          className="btn btn-ghost btn-sm w-full"
+          style={{ width: '100%', justifyContent: 'center', gap: 6 }}
+        >
           <LogOut size={14} /> Logout
         </button>
       </div>
