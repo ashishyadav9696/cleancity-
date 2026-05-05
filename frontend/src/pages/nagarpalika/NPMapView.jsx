@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import Sidebar from '../../components/common/Sidebar';
 import { EmptyState, Spinner } from '../../components/common/UI';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
@@ -6,6 +6,17 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { reportsAPI } from '../../api/axios';
 import { useNavigate } from 'react-router-dom';
+
+// ── Fix Leaflet's broken default icon URLs in Vite/production builds ──────────
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+});
 
 /* ── Status config ─────────────────────────────────────────────── */
 const STATUS_CONFIG = {
@@ -101,15 +112,17 @@ function FitBounds({ reports }) {
 
 /* ── Tile config ───────────────────────────────────────────────── */
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
+// Only include tileSize/zoomOffset when using Mapbox — passing undefined breaks react-leaflet v5
 const tileConfig = MAPBOX_TOKEN
   ? {
     url: `https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/{z}/{x}/{y}?access_token=${MAPBOX_TOKEN}`,
     attribution: '© <a href="https://mapbox.com">Mapbox</a> © <a href="https://openstreetmap.org">OSM</a>',
-    tileSize: 512, zoomOffset: -1,
+    tileSize: 512,
+    zoomOffset: -1,
   }
   : {
-    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-    attribution: '© <a href="https://carto.com">CARTO</a> © <a href="https://openstreetmap.org">OSM</a>',
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
   };
 
 const INDIA_CENTER = [20.5937, 78.9629];
@@ -164,10 +177,16 @@ export default function NPMapView() {
 
   useEffect(() => {
     injectPulseCSS();
-    reportsAPI.getAll({ limit: 500 }).then(({ data }) => {
-      setReports(data.data.filter(r => r.location?.coordinates?.length === 2));
-      setLoading(false);
-    });
+    reportsAPI.getAll({ limit: 500 })
+      .then(({ data }) => {
+        setReports((data?.data || []).filter(r => r.location?.coordinates?.length === 2));
+      })
+      .catch((err) => {
+        console.error('Map: failed to load reports', err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
   const filtered = statusFilter ? reports.filter(r => r.status === statusFilter) : reports;
@@ -225,12 +244,7 @@ export default function NPMapView() {
             }}>
               <MapContainer center={INDIA_CENTER} zoom={INDIA_ZOOM} style={{ height: '100%', width: '100%' }}
                 zoomControl={true} attributionControl={false}>
-                <TileLayer
-                  url={tileConfig.url}
-                  attribution={tileConfig.attribution}
-                  tileSize={tileConfig.tileSize}
-                  zoomOffset={tileConfig.zoomOffset}
-                />
+                <TileLayer {...tileConfig} />
                 {filtered.length > 0 && <FitBounds reports={filtered} />}
                 {filtered.map(r => (
                   <Marker
@@ -249,7 +263,7 @@ export default function NPMapView() {
 
           {/* Attribution */}
           <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text-muted)', textAlign: 'right' }}>
-            {MAPBOX_TOKEN ? '© Mapbox Streets · © OpenStreetMap' : '© CartoDB Voyager · © OpenStreetMap'}
+            {MAPBOX_TOKEN ? '© Mapbox Streets · © OpenStreetMap' : '© OpenStreetMap contributors'}
           </div>
         </div>
       </div>
