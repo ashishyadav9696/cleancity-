@@ -71,6 +71,8 @@ body {
 
 a { color: inherit; text-decoration: none; }
 img { max-width: 100%; display: block; }
+/* ⚠️ Leaflet tiles are <img> elements — the global img reset breaks them */
+.leaflet-container img { max-width: none !important; display: inline !important; }
 button { cursor: pointer; font-family: inherit; }
 input, textarea, select { font-family: inherit; }
 
@@ -215,7 +217,17 @@ td { padding: 14px 16px; font-size: 14px; border-top: 1px solid var(--color-bord
 tr:hover td { background: rgba(255,255,255,0.02); }
 
 /* ============ MAP ============ */
-.leaflet-container { height: 100%; width: 100%; border-radius: var(--radius-lg); }
+.leaflet-container {
+  height: 100% !important;
+  width: 100% !important;
+  border-radius: var(--radius-lg);
+  background: #e5e3df !important; /* OSM default bg — prevents dark flash */
+  z-index: 1;
+}
+.leaflet-container img.leaflet-tile {
+  max-width: none !important;
+  display: inline !important;
+}
 .map-wrapper { height: 500px; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--color-border); }
 
 /* ============ ANIMATIONS ============ */
