@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const http = require('http');
+const path = require('path');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
@@ -82,9 +83,18 @@ try {
   console.log('📄 Swagger docs available at /api/docs');
 } catch (e) {}
 
-// 404
-app.use((req, res) => {
-  res.status(404).json({ success: false, message: `Route ${req.method} ${req.path} not found` });
+// API 404 handler
+app.use('/api', (req, res) => {
+  res.status(404).json({ success: false, message: `API Route ${req.method} ${req.path} not found` });
+});
+
+// Serve frontend static files
+const frontendDistPath = path.join(__dirname, '../../frontend/dist');
+app.use(express.static(frontendDistPath));
+
+// Catch-all route for SPA routing (React Router fallback)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendDistPath, 'index.html'));
 });
 
 // Error handler
