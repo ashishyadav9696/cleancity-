@@ -1,159 +1,102 @@
-# CleanCity 🌱 — Smart Waste Management System
+# 🌱 CleanCity — Smart Waste Management System
 
-A full-stack MERN platform where citizens report waste issues, Nagar Palika staff manages and assigns them, and Admins oversee the entire system.
+<div align="center">
 
----
+![CleanCity](https://img.shields.io/badge/CleanCity-v1.0.0-4CAF50?style=for-the-badge&logo=leaf&logoColor=white)
+![MERN Stack](https://img.shields.io/badge/Stack-MERN-61DAFB?style=for-the-badge&logo=react&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
 
-## 📦 Tech Stack
+**A full-stack civic waste management platform that connects citizens, Nagarpalika staff, and administrators to resolve waste complaints efficiently.**
 
-| Layer     | Technology                                       |
-| --------- | ------------------------------------------------ | 
-| Frontend  | React 18 + Vite, Redux Toolkit, React Router v6  |
-| Backend   | Node.js + Express.js                             |
-| Database  | MongoDB + Mongoose (GeoJSON geospatial)          |
-| Auth      | JWT (access + refresh tokens), bcryptjs          |
-| Maps      | Leaflet.js + OpenStreetMap (free, no key needed) |
-| Images    | Cloudinary (free tier)                           |
-| Real-time | Socket.io                                        | 
-| Email     | Nodemailer (Gmail SMTP)                          |
-| Charts    | Recharts                                         |
-| Export    | xlsx (Excel + CSV)                               |
+[Features](#-features) · [Tech Stack](#-tech-stack) · [Getting Started](#-getting-started) · [API Docs](#-api-documentation) · [Roles](#-user-roles)
+
+</div>
 
 ---
 
-## 🚀 Quick Start
+## 📋 Overview
 
-### Prerequisites
-
-- Node.js 18+
-- MongoDB (local or Atlas)
-- Cloudinary account (free at cloudinary.com)
-
-### 1. Clone & Install
-
-```bash
-# Backend
-cd cleancity/backend
-cp .env.example .env   # fill in your values
-npm install
-
-# Frontend
-cd ../frontend
-npm install
-```
-
-### 2. Configure Backend `.env`
-
-Edit `backend/.env`:
-
-```
-MONGODB_URI=mongodb://localhost:27017/cleancity
-JWT_SECRET=your_strong_secret_here
-CLOUDINARY_CLOUD_NAME=xxx
-CLOUDINARY_API_KEY=xxx
-CLOUDINARY_API_SECRET=xxx
-EMAIL_USER=your@gmail.com
-EMAIL_PASS=your_app_password
-```
-
-> **Gmail App Password**: Google Account → Security → 2-Step Verification → App passwords
-
-### 3. Seed the Database
-
-```bash
-cd backend
-npm run seed
-```
-
-This creates:
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | admin@cleancity.com | Admin@123 |
-| NP Staff | np@cleancity.com | Staff@123 |
-| Worker | worker1@cleancity.com | Worker@123 |
-| Citizen | citizen@cleancity.com | Citizen@123 |
-
-Plus 8 categories and 20 sample reports across Mumbai.
-
-### 4. Start Development Servers
-
-```bash
-# Terminal 1 — Backend API (port 5000)
-cd backend
-npm run dev
-
-# Terminal 2 — Frontend (port 5173)
-cd frontend
-npm run dev
-```
-
-Open **http://localhost:5173**
+CleanCity is a **MERN stack** application that digitizes the entire waste complaint workflow — from a citizen snapping a photo of garbage, to a Nagarpalika staff member assigning a worker, to final verification and closure. The platform provides real-time updates via **Socket.io**, image storage via **Cloudinary**, geospatial mapping via **Leaflet**, and rich analytics via **Recharts**.
 
 ---
 
-## 🔑 User Roles & Features
+## ✨ Features
 
-### 👥 Citizens
+### 🧑‍💼 Citizen Portal
+- Submit waste complaints with **photo upload**, GPS location, category, and description
+- **Anonymous reporting** option with optional contact info
+- Track complaint status using a unique **Tracking ID**
+- View full complaint history and timeline
+- **Upvote** existing complaints to signal priority
+- Receive real-time status notifications
 
-- Register/login or submit **anonymously**
-- Multi-step complaint form: Photo → GPS → Category → Review
-- Auto GPS detection with reverse geocoding (OpenStreetMap Nominatim)
-- Image compression before upload (browser-side)
-- Get unique **Tracking ID** instantly
-- Track complaint status via public URL
-- View complaint history (logged-in)
-- Upvote nearby complaints
+### 🏛️ Nagarpalika (Municipal Staff) Portal
+- Full complaints dashboard with filters (status, priority, category)
+- **Interactive Leaflet map** showing complaint pins across the city
+- Assign complaints to workers with one click
+- View before/after photos uploaded by workers
+- **Verify & mark reports complete** after reviewing worker evidence
+- Add **internal notes** visible to workers
+- Manage workers — create, activate/deactivate accounts
+- Export reports as **PDF / Excel**
 
-### 🏛️ Nagar Palika Staff
+### 🔧 Worker View
+- View assigned complaints and navigation details
+- **Upload proof-of-work photos** (before/after cleanup)
+- Receive internal notes from Nagarpalika staff
+- Mark tasks as in-progress
 
-- Login dashboard with analytics overview
-- **Map View** — all complaints as color-coded markers
-- **List View** — filterable, sortable table
-- Assign complaints to sanitation workers
-- Set priority (Low / Medium / High / Urgent)
-- Add internal notes
-- Update status with optional after-photo
-
-### ⚡ Admin
-
-- System-wide analytics dashboard
-- User management (CRUD for all roles)
-- Category management (emoji icons + colors)
-- Audit log viewer
-- Export reports as Excel or CSV
-
-### 👷 Sanitation Workers
-
-- View assigned tasks
-- Update status from assigned → in progress → completed
-- Upload after-completion photos
+### 🛡️ Super Admin Panel
+- Full **user management** (all roles: citizens, nagarpalika, workers)
+- Manage **complaint categories**
+- View **system-wide analytics** with bar charts and trend graphs
+- Activity **audit logs**
+- Export system data
 
 ---
 
-## 🛠️ API Reference
+## 🏗️ Tech Stack
 
-| Method | Endpoint                            | Auth            | Description                   |
-| ------ | ----------------------------------- | --------------- | ----------------------------- |
-| POST   | `/api/auth/register`                | —               | Citizen self-registration     |
-| POST   | `/api/auth/login`                   | —               | Login (all roles)             |
-| POST   | `/api/auth/refresh`                 | —               | Refresh access token          |
-| GET    | `/api/auth/me`                      | ✅              | Get current user              |
-| POST   | `/api/reports`                      | Optional        | Submit complaint (with photo) |
-| GET    | `/api/reports/track/:id`            | —               | Public complaint tracking     |
-| GET    | `/api/reports/nearby`               | —               | Geospatial nearby query       |
-| GET    | `/api/reports`                      | NP/Admin        | All reports (filtered)        |
-| PATCH  | `/api/reports/:id/assign`           | NP/Admin        | Assign to worker              |
-| PATCH  | `/api/reports/:id/status`           | NP/Admin/Worker | Update status                 |
-| POST   | `/api/reports/:id/upvote`           | Citizen         | Upvote report                 |
-| GET    | `/api/analytics/overview`           | NP/Admin        | Stats overview                |
-| GET    | `/api/analytics/trend`              | NP/Admin        | Daily trend data              |
-| GET    | `/api/analytics/heatmap`            | NP/Admin        | Map heatmap points            |
-| GET    | `/api/analytics/worker-performance` | NP/Admin        | Worker metrics                |
-| GET    | `/api/categories`                   | —               | All active categories         |
-| GET    | `/api/users/workers`                | NP/Admin        | Worker list                   |
-| GET    | `/api/notifications`                | ✅              | User notifications            |
+### Backend
+| Technology | Purpose |
+|---|---|
+| **Node.js + Express** | REST API server |
+| **MongoDB + Mongoose** | Database & ODM |
+| **Socket.io** | Real-time notifications |
+| **JWT (Access + Refresh)** | Authentication |
+| **Cloudinary** | Image uploads & storage |
+| **Multer** | Multipart form handling |
+| **Nodemailer** | Email (password reset, etc.) |
+| **Helmet + express-rate-limit** | Security & rate limiting |
+| **Swagger UI** | Auto-generated API docs |
+| **bcryptjs** | Password hashing |
 
-**Swagger UI**: `http://localhost:5000/api/docs`
+### Frontend
+| Technology | Purpose |
+|---|---|
+| **React 19 + Vite** | UI framework & build tool |
+| **Redux Toolkit** | Global state management |
+| **React Router v7** | Client-side routing |
+| **Axios** | HTTP client |
+| **React Leaflet** | Interactive maps |
+| **Recharts** | Analytics charts & graphs |
+| **React Hook Form + Yup** | Form handling & validation |
+| **Socket.io Client** | Real-time event handling |
+| **Lucide React** | Icon library |
+| **React Hot Toast** | Toast notifications |
+| **jsPDF + XLSX** | PDF & Excel export |
+| **date-fns** | Date formatting |
+
+---
+
+## 👥 User Roles
+
+| Role | Access Level | Key Abilities |
+|---|---|---|
+| `citizen` | Public + Authenticated | Submit, track & upvote complaints |
+| `nagarpalika` | Staff | Manage reports, assign workers, verify completion |
+| `worker` | Field Staff | View assigned tasks, upload proof photos |
+| `admin` | Super Admin | Full platform control, analytics, user management |
 
 ---
 
@@ -161,94 +104,214 @@ Open **http://localhost:5173**
 
 ```
 cleancity/
+├── package.json              # Root scripts (dev, install:all, seed)
 ├── backend/
 │   ├── src/
-│   │   ├── config/          # DB, Cloudinary, Mailer
-│   │   ├── controllers/     # Route handlers
-│   │   ├── middleware/      # Auth, RBAC, Upload, Rate-limit
-│   │   ├── models/          # Mongoose schemas
-│   │   ├── routes/          # Express routers
-│   │   ├── services/        # Socket.io, Mail, Cloudinary
-│   │   ├── utils/           # Helpers, Seed script
-│   │   └── server.js
-│   ├── .env
+│   │   ├── server.js         # Express + Socket.io entry point
+│   │   ├── config/           # DB connection config
+│   │   ├── controllers/      # Route handlers
+│   │   │   ├── auth.controller.js
+│   │   │   ├── reports.controller.js
+│   │   │   ├── users.controller.js
+│   │   │   ├── analytics.controller.js
+│   │   │   ├── categories.controller.js
+│   │   │   └── notifications.controller.js
+│   │   ├── models/           # Mongoose schemas
+│   │   │   ├── User.js
+│   │   │   ├── Report.js
+│   │   │   ├── Category.js
+│   │   │   ├── Notification.js
+│   │   │   └── ActivityLog.js
+│   │   ├── routes/           # API route definitions
+│   │   ├── middleware/       # Auth, error handler, rate limiter
+│   │   ├── services/         # Socket.io service
+│   │   └── utils/            # Seed scripts, helpers
+│   ├── .env.example
 │   └── package.json
-│
 └── frontend/
     ├── src/
-    │   ├── api/             # Axios + API functions
-    │   ├── components/      # Shared UI components
-    │   ├── context/         # Auth + Socket contexts
+    │   ├── App.jsx           # Router & protected routes
     │   ├── pages/
-    │   │   ├── public/      # Landing, Login, Register, Submit, Track
-    │   │   ├── citizen/     # My Complaints, Detail
-    │   │   ├── nagarpalika/ # Dashboard, Map, Reports, Workers
-    │   │   └── admin/       # Dashboard, Users, Categories, Audit, Export
-    │   ├── store/           # Redux Toolkit slices
-    │   └── App.jsx
+    │   │   ├── public/       # Landing, Login, Register, Submit, Track
+    │   │   ├── citizen/      # My Complaints, Complaint Detail
+    │   │   ├── nagarpalika/  # Dashboard, Map, Reports, Workers
+    │   │   └── admin/        # Dashboard, Users, Categories, Audit, Export
+    │   ├── components/       # Reusable UI components
+    │   ├── store/            # Redux slices & store
+    │   ├── api/              # Axios instance & API calls
+    │   ├── context/          # React context providers
+    │   ├── hooks/            # Custom React hooks
+    │   └── utils/            # Utility functions
     └── package.json
 ```
 
 ---
 
-## 🔒 Security Features
+## 🚀 Getting Started
 
-- JWT access tokens (15 min expiry) + refresh tokens (7 days)
-- Auto token refresh via Axios interceptor
-- bcrypt password hashing (12 rounds)
-- Role-based access control (RBAC) middleware
-- Rate limiting: 10 auth attempts/15min, 5 anonymous reports/hour
-- Helmet.js security headers
-- Input validation via Express-validator
-- Multer file type validation (images only, 10MB max)
-- Cloudinary WebP compression (auto-transforms to < 2MB)
+### Prerequisites
+- **Node.js** v18+
+- **MongoDB** (local or [MongoDB Atlas](https://www.mongodb.com/atlas))
+- **Cloudinary** account (free at [cloudinary.com](https://cloudinary.com))
+- **Git**
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/your-username/cleancity.git
+cd cleancity
+```
+
+### 2. Install All Dependencies
+
+```bash
+npm run install:all
+```
+
+This installs dependencies for the root, backend, and frontend in one command.
+
+### 3. Configure Environment Variables
+
+```bash
+cd backend
+cp .env.example .env
+```
+
+Edit `backend/.env` with your credentials:
+
+```env
+PORT=5000
+MONGODB_URI=mongodb://localhost:27017/cleancity
+NODE_ENV=development
+
+# JWT
+JWT_SECRET=your_super_secret_jwt_key_change_in_production
+JWT_REFRESH_SECRET=your_refresh_secret_key_change_in_production
+JWT_EXPIRES_IN=15m
+JWT_REFRESH_EXPIRES_IN=7d
+
+# Cloudinary
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+
+# Email (Gmail with App Password)
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_app_password
+
+# Frontend URL (for CORS)
+CLIENT_URL=http://localhost:5173
+```
+
+### 4. Seed the Database (Optional)
+
+Populate the database with default categories, roles, and a super admin account:
+
+```bash
+npm run seed
+```
+
+### 5. Start Development Servers
+
+```bash
+npm run dev
+```
+
+This concurrently starts:
+- 🔵 **Backend API** → `http://localhost:5000`
+- 🟣 **Frontend (Vite)** → `http://localhost:5173`
 
 ---
 
-## 🌐 Real-time Features (Socket.io)
+## 🌐 API Documentation
 
-| Event           | Direction  | Trigger                  |
-| --------------- | ---------- | ------------------------ |
-| `new_report`    | → NP/Admin | New complaint submitted  |
-| `status_update` | → Reporter | Status changed           |
-| `notification`  | → User     | Any notification created |
+Interactive Swagger UI is available at:
 
----
+```
+http://localhost:5000/api/docs
+```
 
-## 🗺️ Maps
+### Key Endpoints
 
-Uses **Leaflet.js + OpenStreetMap** — completely free, no API key required.
-
-- Color-coded circular markers by status
-- Marker size scales with upvote count
-- Popup shows photo, category, status, address
-
----
-
-## 📬 Email Notifications
-
-Automated HTML emails sent for:
-
-- Welcome (on registration)
-- Complaint received (with tracking ID)
-- Status update (at each change)
-- Worker assignment (to sanitation worker)
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `POST` | `/api/auth/register` | Register new citizen | ❌ |
+| `POST` | `/api/auth/login` | Login & get tokens | ❌ |
+| `POST` | `/api/auth/refresh` | Refresh access token | ❌ |
+| `GET` | `/api/reports` | List all reports | ✅ |
+| `POST` | `/api/reports` | Submit a complaint | ✅ |
+| `GET` | `/api/reports/:id` | Get report details | ✅ |
+| `PATCH` | `/api/reports/:id/status` | Update report status | ✅ Staff+ |
+| `POST` | `/api/reports/:id/assign` | Assign to worker | ✅ Staff+ |
+| `POST` | `/api/reports/:id/upload-proof` | Upload proof photo | ✅ Worker |
+| `POST` | `/api/reports/:id/notes` | Add internal note | ✅ Staff+ |
+| `GET` | `/api/analytics/summary` | System analytics | ✅ Admin |
+| `GET` | `/api/users` | List all users | ✅ Admin |
+| `GET` | `/api/health` | API health check | ❌ |
 
 ---
 
-## 🐛 Troubleshooting
+## 🗃️ Data Models
 
-| Issue                    | Solution                                           |
-| ------------------------ | -------------------------------------------------- |
-| MongoDB connection error | Make sure MongoDB is running: `mongod`             |
-| Image upload fails       | Check Cloudinary credentials in `.env`             |
-| Email not sending        | Use Gmail App Password (not your account password) |
-| CORS error               | Set `CLIENT_URL` in backend `.env` correctly       |
-| Port conflict            | Change `PORT` in backend `.env`                    |
-<<<<<<< HEAD
-=======
-# cleancity-
- A MERN stack platform enabling citizens to report waste issues with geo-tagged photos, while municipal authorities can assign and track cleanup tasks in real-time.
+### User
+- `name`, `email`, `phone`, `passwordHash`
+- `role`: `citizen | nagarpalika | admin | worker`
+- `city`, `nagarPalikaId` (worker → staff link)
+- `isVerified`, `isActive`, `avatar`
 
-=======
->>>>>>> f73c3ac (Fix all login issues and others also)
+### Report (Complaint)
+- `trackingId` — unique public identifier
+- `photo`, `beforePhoto`, `afterPhoto` — Cloudinary URLs
+- `location` — GeoJSON Point (coordinates + address)
+- `category`, `description`, `priority`
+- `status`: `pending → assigned → in_progress → in_review → completed | rejected`
+- `assignedTo` (worker), `assignedBy` (staff)
+- `upvotes`, `internalNotes`, `statusHistory` timeline
+
+---
+
+## 🔒 Security
+
+- **JWT Access Tokens** (15 min) + **Refresh Tokens** (7 days)
+- Passwords hashed with **bcrypt** (12 rounds)
+- **Helmet.js** for HTTP security headers
+- **Rate limiting** on all API routes
+- Role-based middleware on every protected route
+- Sensitive fields (`passwordHash`, `refreshToken`) stripped from API responses
+
+---
+
+## 📊 Analytics
+
+The Admin dashboard provides:
+- Total reports by status (bar chart)
+- Weekly activity trends
+- Reports by category breakdown
+- Resolution rate metrics
+- User growth over time
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch: `git checkout -b feature/your-feature`
+3. Commit your changes: `git commit -m 'Add some feature'`
+4. Push to the branch: `git push origin feature/your-feature`
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+
+---
+
+<div align="center">
+
+Made with ❤️ for cleaner cities · **CleanCity v1.0.0**
+
+</div>
