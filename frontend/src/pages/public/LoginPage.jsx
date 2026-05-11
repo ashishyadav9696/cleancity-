@@ -97,20 +97,24 @@ export default function LoginPage() {
         padding: '60px 80px', position: 'relative',
         borderRight: '1px solid rgba(255,255,255,0.06)',
       }} className="login-left-panel">
-        {/* Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 64 }}>
+        {/* Logo — click to go home */}
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 64, textDecoration: 'none', cursor: 'pointer' }}>
           <div style={{
             width: 44, height: 44, borderRadius: 14,
             background: 'linear-gradient(135deg, #22d3ee, #6366f1)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             boxShadow: '0 8px 24px rgba(34,211,238,0.3)',
-          }}>
+            transition: 'transform 0.2s, box-shadow 0.2s',
+          }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.08)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(34,211,238,0.45)'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(34,211,238,0.3)'; }}
+          >
             <Leaf size={22} color="#fff" />
           </div>
           <span style={{ fontSize: 22, fontWeight: 800, fontFamily: 'Space Grotesk, sans-serif', background: 'linear-gradient(135deg,#22d3ee,#6366f1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             Smart Waste Management System
           </span>
-        </div>
+        </Link>
 
         {/* Headline */}
         <div style={{ marginBottom: 48 }}>
