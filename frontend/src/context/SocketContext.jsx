@@ -4,12 +4,27 @@ import { useAuth } from './AuthContext';
 
 const SocketContext = createContext(null);
 
+const getSocketUrl = () => {
+  if (import.meta.env.VITE_SOCKET_URL) {
+    return import.meta.env.VITE_SOCKET_URL;
+  }
+  const hostname = window.location.hostname;
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return 'http://localhost:5000';
+  }
+  if (hostname.endsWith('.onrender.com') && hostname.includes('-frontend')) {
+    const backendHost = hostname.replace('-frontend', '-backend');
+    return `https://${backendHost}`;
+  }
+  return window.location.origin;
+};
+
 export const SocketProvider = ({ children }) => {
   const { user } = useAuth();
   const socketRef = useRef(null);
 
   useEffect(() => {
-    const socket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000', {
+    const socket = io(getSocketUrl(), {
       transports: ['websocket'],
       reconnectionAttempts: 5,
     });

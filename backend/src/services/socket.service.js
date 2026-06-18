@@ -4,7 +4,19 @@ const initSocket = (server) => {
   const { Server } = require('socket.io');
   io = new Server(server, {
     cors: {
-      origin: process.env.CLIENT_URL || 'http://localhost:5173',
+      origin: (origin, callback) => {
+        const allowed = [
+          process.env.CLIENT_URL || 'http://localhost:5173',
+          'http://localhost:5173',
+          'http://localhost:5174',
+          'http://localhost:5175',
+        ];
+        if (!origin || allowed.includes(origin) || origin.endsWith('.onrender.com')) {
+          callback(null, true);
+        } else {
+          callback(new Error('CORS: Origin not allowed by Socket.io'));
+        }
+      },
       methods: ['GET', 'POST'],
       credentials: true,
     },

@@ -38,7 +38,8 @@ app.use(cors({
       'http://localhost:5174',
       'http://localhost:5175',
     ];
-    if (!origin || allowed.includes(origin)) {
+    const isAllowed = !origin || allowed.includes(origin) || origin.endsWith('.onrender.com');
+    if (isAllowed) {
       callback(null, true);
     } else {
       callback(new Error(`CORS: Origin ${origin} not allowed`));
